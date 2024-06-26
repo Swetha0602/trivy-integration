@@ -11,6 +11,18 @@ pipeline {
         steps {
                 sh 'trivy --version'
               }
-      }
+         }
+       stage('Docker Login'){
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                      sh "docker login -u $USERNAME -p $PASSWORD"
+                }
+            }
+        }
+        stage('Trivy Scan') {
+            steps {
+                sh 'trivy image $IMAGE_NAME:$IMAGE_VERSION'
+            }
+        }
     }
 }
